@@ -32,8 +32,8 @@ rover = connect('udpout:127.0.0.1:14550', wait_ready=True, heartbeat_timeout=15)
 rover.mode = VehicleMode("GUIDED")
 rover.armed = True
 
-UDP_IP = "255.255.255.255"
-UDP_IP_S = ""
+UDP_IP = ""
+UDP_IP_S = "255.255.255.255"
 UDP_PORT = 8080
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -76,6 +76,7 @@ try:
             rover.mode = VehicleMode("HOLD")
             wait_QR_code()
             os.popen("sudo -S %s"%("echo P1-12=80% > /dev/servoblaster"), 'w').write('hack')
+            send_ok_msg()
         else:
             os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')
             rover.mode = VehicleMode("GUIDED")

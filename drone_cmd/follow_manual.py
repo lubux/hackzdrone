@@ -35,12 +35,18 @@ rover.mode = VehicleMode("GUIDED")
 rover.armed = True
 
 
+
 UDP_IP = ""
+UDP_IP_S = "255.255.255.255"
 UDP_PORT = 8080
 LAT, LONG = None, None
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
+
+def send_ok_msg():
+    print "SEND OK SCAN MESSAGE"
+    sock.sendto( bytearray([3]), (UDP_IP_S, UDP_PORT))
 
 class locationThread (threading.Thread):
     def __init__(self, threadID, name, counter):
@@ -110,6 +116,7 @@ try:
             rover.mode = VehicleMode("HOLD")
             wait_QR_code()
             os.popen("sudo -S %s"%("echo P1-12=80% > /dev/servoblaster"), 'w').write('hack')
+            send_ok_msg()
         else:
             os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')
             LAT, LONG = struct.unpack("!xdd", data)
