@@ -87,10 +87,16 @@ public class DroneComunicator implements Closeable {
     }
 
     public boolean scanOK() throws IOException {
-        byte[] buffer = new byte[1];
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, addr, PORT_DRONE);
-        socket.receive(packet);
-        return packet.getData()[0] == MSG_OK;
+        while (true) {
+            byte[] buffer = new byte[1];
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, addr, PORT_DRONE);
+            socket.receive(packet);
+            if (packet.getData()[0] == MSG_OK) {
+                return true;
+            } else if (packet.getData()[0] == MSG_ERR){
+                return false;
+            }
+        }
     }
 
     @Override
