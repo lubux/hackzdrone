@@ -41,7 +41,7 @@ if not connection_string:
 print 'Connecting to vehicle on: %s' % connection_string
 vehicle = connect(connection_string, wait_ready=True)
 
-UDP_IP = "127.0.0.1"
+UDP_IP = ""
 UDP_PORT = 8080
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
