@@ -7,10 +7,43 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="stelu.ch.droneclient.MainActivity">
+    tools:context="stelu.ch.droneclient.MainActivity"
+    android:background="#F0F4C3">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start Loc Send"
+            android:id="@+id/button"
+            android:layout_weight="0.09"
+            android:background="#C6FF00"
+            android:onClick="onClickSendLoc" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Stop Loc Send"
+            android:id="@+id/button2"
+            android:layout_weight="0.09"
+            android:background="#C6FF00"
+            android:layout_marginTop="10dp"
+            android:onClick="onStopSendLoc" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="QR CODE"
+            android:id="@+id/button3"
+            android:layout_weight="0.09"
+            android:background="#C6FF00"
+            android:layout_marginTop="10dp"
+            android:onClick="onStopSendLoc" />
+
+    </LinearLayout>
 </RelativeLayout>
