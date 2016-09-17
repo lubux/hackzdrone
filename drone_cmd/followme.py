@@ -32,14 +32,16 @@ sitl = None
 
 
 #Start SITL if no connection string specified
+
 if not connection_string:
     import dronekit_sitl
     sitl = dronekit_sitl.start_default()
     connection_string = sitl.connection_string()
 
 # Connect to the Vehicle
-print 'Connecting to vehicle on: %s' % connection_string
-vehicle = connect(connection_string, wait_ready=True)
+if connection_string:
+    print 'Connecting to vehicle on: %s' % connection_string
+    vehicle = connect(connection_string, wait_ready=True)
 
 UDP_IP = ""
 UDP_PORT = 8080
@@ -49,9 +51,10 @@ sock.bind((UDP_IP, UDP_PORT))
 
 try:
     while True:
+        print "waiting..."
         data, _ = sock.recvfrom(17)
         print data
-        lat, long = struct.unpack("=xdd", data)
+        lat, long = struct.unpack("!xdd", data)
 
         dest = LocationGlobalRelative(lat, long, 0)
         print "Going to: %s" % dest
