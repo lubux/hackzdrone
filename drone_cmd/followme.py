@@ -23,8 +23,10 @@ import struct
 import os
 import picamera
 
+SECRET = "Banana!!"
+
 os.popen("sudo -S %s"%("./banana/PiBits/ServoBlaster/user/servod"), 'w').write('hack')
-os.popen("sudo -S %s"%("echo P1-12=0% > /dev/servoblaster"), 'w').write('hack')
+os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')
 
 rover = connect('udpout:127.0.0.1:14550', wait_ready=True, heartbeat_timeout=15)
 rover.mode = VehicleMode("GUIDED")
@@ -38,17 +40,34 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
 
 
+def wait_QR_code():
+    print "TEST2"
+    with picamera.PiCamera() as camera:
+        print "TEST2.5"
+        camera.start_preview()
+        time.sleep(1)
+        print "TEST3"
+        while True:
+            print "take pic"
+            camera.capture('QR.jpg')
+            myCode = QR(filename=u"QR.jpg")
+            if myCode.decode():
+                print myCode.data
+                if myCode.data == SECRET:
+                    return
+
 try:
     while True:
         print "waiting..."
         data, _ = sock.recvfrom(17)
         print data
         if bytearray(data)[0] == 2:
+            print "Stopped"
             rover.mode = VehicleMode("HOLD")
-            time.sleep(5)
-            os.popen("sudo -S %s"%("echo P1-12=100% > /dev/servoblaster"), 'w').write('hack')
+            wait_QR_code()
+            os.popen("sudo -S %s"%("echo P1-12=80% > /dev/servoblaster"), 'w').write('hack')
         else:
-            os.popen("sudo -S %s"%("echo P1-12=0% > /dev/servoblaster"), 'w').write('hack')
+            os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')
             rover.mode = VehicleMode("GUIDED")
             lat, long = struct.unpack("!xdd", data)
             print "lat long:", lat, long
@@ -67,13 +86,3 @@ print "Close vehicle object"
 rover.close()
 
 print("Completed")
-
-def get_QR_code():
-    with picamera.PiCamera() as camera:
-        while True:
-            camera.capture('QR.jpg')
-            myCode = QR(filename=u"QR.jpg")
-            if myCode.decode():
-                print myCode.data
-                return myCode.data
-            time.sleep(0.1)

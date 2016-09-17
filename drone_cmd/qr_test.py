@@ -22,13 +22,10 @@ import picamera
 from qrtools import QR
 import time
 
-def get_QR_code():
-    with picamera.PiCamera() as camera:
-        while True:
-            camera.capture('QR.jpg')
-            print "PIC!"
-            myCode = QR(filename=u"QR.jpg")
-            if myCode.decode():
-                print myCode.data
-                return myCode.data
-            time.sleep(0.1)
+with picamera.PiCamera() as camera:
+    while True:
+        camera.capture('QR.jpg')
+        print "PIC!"
+        myCode = QR(filename=u"QR.jpg")
+        if myCode.decode():
+            print myCode.data
