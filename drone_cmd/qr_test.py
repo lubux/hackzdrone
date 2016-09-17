@@ -11,7 +11,24 @@ codes = zbarlight.scan_codes('qrcode', image)
 print('QR codes: %s' % codes)
 """
 
+"""
 from qrtools import QR
 myCode = QR(filename=u"qr_code.jpg")
 if myCode.decode():
   print myCode.data
+"""
+
+import picamera
+from qrtools import QR
+import time
+
+def get_QR_code():
+    with picamera.PiCamera() as camera:
+        while True:
+            camera.capture('QR.jpg')
+            print "PIC!"
+            myCode = QR(filename=u"QR.jpg")
+            if myCode.decode():
+                print myCode.data
+                return myCode.data
+            time.sleep(0.1)

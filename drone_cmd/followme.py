@@ -15,11 +15,13 @@ Example documentation: http://python.dronekit.io/examples/follow_me.html
 """
 
 from dronekit import connect, VehicleMode, LocationGlobalRelative
+from qrtools import QR
 import socket
 import time
 import sys
 import struct
 import os
+import picamera
 
 os.popen("sudo -S %s"%("./banana/PiBits/ServoBlaster/user/servod"), 'w').write('hack')
 os.popen("sudo -S %s"%("echo P1-12=0% > /dev/servoblaster"), 'w').write('hack')
@@ -65,3 +67,13 @@ print "Close vehicle object"
 rover.close()
 
 print("Completed")
+
+def get_QR_code():
+    with picamera.PiCamera() as camera:
+        while True:
+            camera.capture('QR.jpg')
+            myCode = QR(filename=u"QR.jpg")
+            if myCode.decode():
+                print myCode.data
+                return myCode.data
+            time.sleep(0.1)
