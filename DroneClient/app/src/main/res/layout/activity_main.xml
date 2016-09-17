@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="stelu.ch.droneclient.MainActivity"
-    android:background="#F0F4C3">
+    android:background="@color/backgroundColour">
 
     <LinearLayout
         android:orientation="vertical"
@@ -18,23 +18,13 @@
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="Start Loc Send"
+            android:layout_height="160dp"
+            android:text="Order BANANA"
             android:id="@+id/button"
             android:layout_weight="0.09"
-            android:background="#C6FF00"
+            android:background="@color/buttonsColour"
             android:onClick="onClickSendLoc"
             android:layout_gravity="bottom|left" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="QR CODE"
-            android:id="@+id/button3"
-            android:layout_weight="0.09"
-            android:background="#C6FF00"
-            android:layout_marginTop="10dp"
-            android:onClick="onQRCode" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -46,6 +36,30 @@
                 android:id="@+id/imageView2"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Drone approaching"
+                    android:id="@+id/driving"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp" />
+
+                <ProgressBar
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/progressBar"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp" />
+            </LinearLayout>
+
         </FrameLayout>
 
     </LinearLayout>

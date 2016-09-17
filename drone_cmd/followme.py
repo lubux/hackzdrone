@@ -32,12 +32,22 @@ rover = connect('udpout:127.0.0.1:14550', wait_ready=True, heartbeat_timeout=15)
 rover.mode = VehicleMode("GUIDED")
 rover.armed = True
 
-
-UDP_IP = ""
+UDP_IP = "255.255.255.255"
+UDP_IP_S = ""
 UDP_PORT = 8080
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
+
+
+def send_ok_msg():
+    print "SEND OK SCAN MESSAGE"
+    sock.sendto( bytearray([3]), (UDP_IP_S, UDP_PORT))
+
+
+def send_err_msg():
+    print "SEND ERROR SCAN MESSAGE"
+    sock.sendto( bytearray([4]), (UDP_IP_S, UDP_PORT))
 
 
 def wait_QR_code():

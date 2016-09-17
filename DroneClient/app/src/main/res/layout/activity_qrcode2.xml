@@ -7,10 +7,28 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="stelu.ch.droneclient.QRCodeActivity">
+    tools:context="stelu.ch.droneclient.QRCodeActivity"
+    android:background="@color/backgroundColour">
 
-    <ImageView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/imageView" />
+        android:layout_height="match_parent">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get your BANANA"
+            android:id="@+id/button2"
+            android:onClick="onRetry"
+            android:background="@color/buttonsColour" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/imageView"
+            android:layout_marginTop="10dp" />
+
+    </LinearLayout>
+
 </RelativeLayout>

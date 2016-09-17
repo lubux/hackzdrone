@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -22,8 +24,12 @@ public class MainActivity extends AppCompatActivity {
 
     private LocationManager locationManager = null;
     private GPSListener listener = null;
-    private DroneComunicator drone_com;
+    public static DroneComunicator drone_com;
     private boolean buttonIsStart = true;
+
+    private ProgressBar bar;
+    private TextView loadingText;
+    private  ImageView imgv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         listener = new GPSListener(drone_com);
-        ImageView imgv = (ImageView) findViewById(R.id.imageView2);
+        imgv = (ImageView) findViewById(R.id.imageView2);
         imgv.setImageResource(R.drawable.large);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -50,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
+        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+        bar = (ProgressBar) findViewById(R.id.progressBar);
+        loadingText = (TextView) findViewById(R.id.driving);
+        bar.setVisibility(View.INVISIBLE);
+        loadingText.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -83,12 +94,20 @@ public class MainActivity extends AppCompatActivity {
         if (buttonIsStart) {
             buttonIsStart = false;
             startSendingLocation();
-            button.setText("STOP LOC");
+            button.setText("Drone is near");
+            this.loadingText.setVisibility(View.VISIBLE);
+            this.bar.setVisibility(View.VISIBLE);
+            this.imgv.setVisibility(View.INVISIBLE);
+
         } else {
             buttonIsStart = true;
             stoptSendingLocation();
-            button.setText("START LOC");
-            listener=null;
+            button.setText("Order Banana");
+            this.loadingText.setVisibility(View.INVISIBLE);
+            this.bar.setVisibility(View.INVISIBLE);
+            this.imgv.setVisibility(View.VISIBLE);
+            Intent intent = new Intent(this, QRCodeActivity.class);
+            startActivity(intent);
         }
 
     }
