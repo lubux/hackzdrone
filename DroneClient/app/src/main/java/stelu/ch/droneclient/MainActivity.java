@@ -11,15 +11,19 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
 
     private LocationManager locationManager = null;
     private GPSListener listener = null;
     private DroneComunicator drone_com;
+    private boolean buttonIsStart = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,23 +35,9 @@ public class MainActivity extends AppCompatActivity {
         } catch (SocketException e) {
             e.printStackTrace();
         }
-    }
-
-    public void onClickSendLoc(View v) {
-        startSendingLocation();
-    }
-
-    public void onStopSendLoc(View v) {
-        stoptSendingLocation();
-    }
-
-    public void onQRCode(View v) {
-        Intent intent = new Intent(this, qrcodeactivity.class);
-        startActivity(intent);
-    }
-
-    public void startSendingLocation() {
         listener = new GPSListener(drone_com);
+        ImageView imgv = (ImageView) findViewById(R.id.imageView2);
+        imgv.setImageResource(R.drawable.large);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -62,7 +52,14 @@ public class MainActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
     }
 
-    public void stoptSendingLocation() {
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -74,12 +71,66 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         locationManager.removeUpdates(listener);
+        try {
+            this.drone_com.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onClickSendLoc(View v) {
+        Button button = (Button) v;
+        if (buttonIsStart) {
+            buttonIsStart = false;
+            startSendingLocation();
+            button.setText("STOP LOC");
+        } else {
+            buttonIsStart = true;
+            stoptSendingLocation();
+            button.setText("START LOC");
+            listener=null;
+        }
+
+    }
+
+    public void onQRCode(View v) {
+        Intent intent = new Intent(this, QRCodeActivity.class);
+        startActivity(intent);
+    }
+
+    public void startSendingLocation() {
+        listener.setSendable();
+        if(listener.getLocation()!=null) {
+            try {
+                drone_com.sendLocation(listener.getLocation());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public void stoptSendingLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        this.listener.setPassive();
+        drone_com.stopDrone();
     }
 
     public static class GPSListener implements LocationListener {
 
         private DroneComunicator comunicator;
         private static long MIN_WAIT_TIME = 2000;
+        private Location lastLocation = null;
+        private AtomicBoolean inSendMode = new AtomicBoolean(false);
 
         private long curtime = -1;
 
@@ -87,13 +138,27 @@ public class MainActivity extends AppCompatActivity {
             this.comunicator = comunicator;
         }
 
+        public Location getLocation() {
+            return lastLocation;
+        }
+
+        public void setSendable() {
+            this.inSendMode.set(true);
+        }
+
+        public void setPassive() {
+            this.inSendMode.set(false);
+        }
+
         @Override
         public void onLocationChanged(Location location) {
             long ms = System.currentTimeMillis();
             try {
                 if(curtime==-1 || (curtime - ms > MIN_WAIT_TIME)) {
-                    comunicator.sendLocation(location);
+                    if(inSendMode.get())
+                        comunicator.sendLocation(location);
                     curtime = ms;
+                    this.lastLocation = location;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

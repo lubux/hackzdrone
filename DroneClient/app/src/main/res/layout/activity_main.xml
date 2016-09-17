@@ -18,32 +18,35 @@
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:text="Start Loc Send"
             android:id="@+id/button"
             android:layout_weight="0.09"
             android:background="#C6FF00"
-            android:onClick="onClickSendLoc" />
+            android:onClick="onClickSendLoc"
+            android:layout_gravity="bottom|left" />
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Stop Loc Send"
-            android:id="@+id/button2"
-            android:layout_weight="0.09"
-            android:background="#C6FF00"
-            android:layout_marginTop="10dp"
-            android:onClick="onStopSendLoc" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:text="QR CODE"
             android:id="@+id/button3"
             android:layout_weight="0.09"
             android:background="#C6FF00"
             android:layout_marginTop="10dp"
-            android:onClick="onStopSendLoc" />
+            android:onClick="onQRCode" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="316dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView2"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp" />
+        </FrameLayout>
 
     </LinearLayout>
 </RelativeLayout>

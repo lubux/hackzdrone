@@ -18,10 +18,11 @@ import java.nio.ByteBuffer;
  */
 public class DroneComunicator implements Closeable {
 
-    public static final String IP_BASIC = "172.31.3.23";
+    public static final String IP_BASIC = "192.168.1.101";
     public static final int PORT_DRONE = 8080;
 
     public static final int MSG_ID_LOCATION = 1;
+    public static final int MSG_ID_STOP = 2;
 
     private DatagramSocket socket;
     private InetAddress addr = null;
@@ -64,6 +65,23 @@ public class DroneComunicator implements Closeable {
             }
         }).execute(packet);
 
+    }
+
+    public void stopDrone() {
+        byte[] buffer = new byte[1];
+        buffer[0] = 2;
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, addr, PORT_DRONE);
+        (new AsyncTask<DatagramPacket, Void, String>(){
+            @Override
+            protected String doInBackground(DatagramPacket... params) {
+                try {
+                    socket.send(params[0]);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }).execute(packet);
     }
 
     @Override
