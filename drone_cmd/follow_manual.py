@@ -104,7 +104,7 @@ class locationThread (threading.Thread):
                   rc_throttle = 1440
                 rover.channels.overrides['1'] = rc_steer
                 rover.channels.overrides['3'] = rc_throttle
-            time.sleep(0.5)
+            time.sleep(0.3)
 
         print "Exiting " + self.name
 
@@ -122,6 +122,10 @@ def wait_QR_code():
                     return
             time.sleep(0.1)
 
+def timer_fun():
+    print "LOL"
+    os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')
+
 try:
     locThread = locationThread(1, "locThread", 1)
     locThread.start()
@@ -133,7 +137,8 @@ try:
             print "Stopped"
             rover.mode = VehicleMode("HOLD")
             wait_QR_code()
-            Timer(5.0, os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')).start()
+            os.popen("sudo -S %s"%("echo P1-12=80% > /dev/servoblaster"), 'w').write('hack')
+            Timer(5.0, timer_fun).start()
             send_ok_msg()
         elif bytearray(data)[0] == 1:
             os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')
@@ -146,9 +151,10 @@ except socket.error:
     print "Error: gpsd service does not seem to be running, plug in USB GPS or run run-fake-gps.sh"
     sys.exit(1)
 
-#Close vehicle object before exiting script
-print "Close vehicle object"
-END = True
-rover.close()
+finally:
+    #Close vehicle object before exiting script
+    print "Close vehicle object"
+    END = True
+    rover.close()
 
-print("Completed")
+    print("Completed")
