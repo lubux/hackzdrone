@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
+        // locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
         bar = (ProgressBar) findViewById(R.id.progressBar);
         loadingText = (TextView) findViewById(R.id.driving);
@@ -172,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLocationChanged(Location location) {
             long ms = System.currentTimeMillis();
+            Log.i("INFO", "loc changed");
             try {
                 if(curtime==-1 || (curtime - ms > MIN_WAIT_TIME)) {
                     if(inSendMode.get())
