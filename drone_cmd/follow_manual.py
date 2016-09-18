@@ -130,6 +130,7 @@ try:
             rover.mode = VehicleMode("HOLD")
             wait_QR_code()
             os.popen("sudo -S %s"%("echo P1-12=80% > /dev/servoblaster"), 'w').write('hack')
+            send_ok_msg()
         else:
             os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')
             LAT, LONG = struct.unpack("!xdd", data)
