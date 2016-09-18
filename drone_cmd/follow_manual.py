@@ -24,6 +24,10 @@ import os
 import picamera
 import threading
 import math
+from threading import Timer
+
+
+
 END = False
 SECRET = "Banana!!"
 
@@ -95,7 +99,7 @@ class locationThread (threading.Thread):
 
                 rc_steer = steering
                 dist = rover.rangefinder.distance
-                rc_throttle = 1512 - dist*50
+                rc_throttle = 1490 - dist*50
                 if rc_throttle < 1440:
                   rc_throttle = 1440
                 rover.channels.overrides['1'] = rc_steer
@@ -129,9 +133,9 @@ try:
             print "Stopped"
             rover.mode = VehicleMode("HOLD")
             wait_QR_code()
-            os.popen("sudo -S %s"%("echo P1-12=80% > /dev/servoblaster"), 'w').write('hack')
+            Timer(5.0, os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')).start()
             send_ok_msg()
-        else:
+        elif bytearray(data)[0] == 1:
             os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')
             LAT, LONG = struct.unpack("!xdd", data)
             print "lat long:", LAT, LONG
