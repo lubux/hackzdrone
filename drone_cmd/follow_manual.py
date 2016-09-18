@@ -64,10 +64,9 @@ class locationThread (threading.Thread):
                 d_lat = LAT - curlat
                 d_lon = LONG - curlong
 
-                alpha = math.atan2(d_lat, d_lon)*180.0/math.pi
+                alpha = math.degrees(math.atan2(d_lat, d_lon))
                 if alpha < 0:
                     alpha += 360
-                #total_dist = math.sqrt(d_lat*d_lat + d_lon*d_lon)
 
                 d_alpha = alpha - heading
                 if d_alpha < -180:
@@ -127,7 +126,7 @@ try:
             rover.mode = VehicleMode("HOLD")
             wait_QR_code()
             os.popen("sudo -S %s"%("echo P1-12=80% > /dev/servoblaster"), 'w').write('hack')
-            Timer(5.0, timer_fun).start()
+            Timer(7.0, timer_fun).start()
             send_ok_msg()
         elif bytearray(data)[0] == 1:
             os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')
