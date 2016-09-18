@@ -28,7 +28,7 @@ public class QRCodeActivity extends AppCompatActivity {
         imgView = (ImageView)findViewById(R.id.imageView);
         imgView.setImageBitmap(loadQRCode("Banana!!"));
         button = (Button) findViewById(R.id.button2);
-        button.setVisibility(View.INVISIBLE);
+        //button.setVisibility(View.INVISIBLE);
         (new CodeChecker()).execute();
 
     }

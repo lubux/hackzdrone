@@ -46,7 +46,14 @@ sock.bind((UDP_IP, UDP_PORT))
 
 def send_ok_msg():
     print "SEND OK SCAN MESSAGE"
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     sock.sendto( bytearray([3]), (UDP_IP_S, UDP_PORT))
+
+
+def send_err_msg():
+    print "SEND ERROR SCAN MESSAGE"
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    sock.sendto( bytearray([4]), (UDP_IP_S, UDP_PORT))
 
 class locationThread (threading.Thread):
     def __init__(self, threadID, name, counter):
