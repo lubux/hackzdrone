@@ -24,7 +24,7 @@ import os
 import picamera
 import threading
 import math
-
+END = False
 SECRET = "Banana!!"
 
 os.popen("sudo -S %s"%("./banana/PiBits/ServoBlaster/user/servod"), 'w').write('hack')
@@ -39,7 +39,7 @@ rover.armed = True
 UDP_IP = ""
 UDP_IP_S = "255.255.255.255"
 UDP_PORT = 8080
-LAT, LONG = None, None
+LAT, LONG = 0.0, 0.0
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
@@ -57,21 +57,26 @@ class locationThread (threading.Thread):
     def run(self):
         print "Starting " + self.name
 
-        while True:
+        while not END:
             if rover.mode == VehicleMode("MANUAL"):
-                print ""
-                curlat, curlong = rover.location.global_frame.lat, rover.location.global_frame.long
+                curlat, curlong = rover.location.global_frame.lat, rover.location.global_frame.lon
                 heading = rover.heading
 
-                d_lat = LAT-curlat
-                d_lon = LONG-curlong
+                d_lat = LAT - curlat
+                d_lon = LONG - curlong
 
-                alpha = math.atan2(d_lat, d_lon)*180/math.pi
+                alpha = math.atan2(d_lat, d_lon)*180.0/math.pi
+                if alpha < 0:
+                    alpha += 360
                 #total_dist = math.sqrt(d_lat*d_lat + d_lon*d_lon)
 
-                d_alpha = alpha-heading
+                d_alpha = alpha - heading
                 if d_alpha < -180:
-                    d_alpha += 180
+                    d_alpha += 360
+                if d_alpha > 180:
+                    d_alpha -= 360
+
+                print heading, alpha, d_alpha
 
                 steering = d_alpha * 5 + 1512
                 if abs(d_alpha) < 6:
@@ -88,6 +93,7 @@ class locationThread (threading.Thread):
                   rc_throttle = 1440
                 rover.channels.overrides['1'] = rc_steer
                 rover.channels.overrides['3'] = rc_throttle
+            time.sleep(0.5)
 
         print "Exiting " + self.name
 
@@ -103,6 +109,7 @@ def wait_QR_code():
                 print myCode.data
                 if myCode.data == SECRET:
                     return
+            time.sleep(0.1)
 
 try:
     locThread = locationThread(1, "locThread", 1)
@@ -116,7 +123,6 @@ try:
             rover.mode = VehicleMode("HOLD")
             wait_QR_code()
             os.popen("sudo -S %s"%("echo P1-12=80% > /dev/servoblaster"), 'w').write('hack')
-            send_ok_msg()
         else:
             os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')
             LAT, LONG = struct.unpack("!xdd", data)
@@ -124,12 +130,13 @@ try:
             rover.mode = VehicleMode("MANUAL")
 
 except socket.error:
+    print socket.error.strerror
     print "Error: gpsd service does not seem to be running, plug in USB GPS or run run-fake-gps.sh"
     sys.exit(1)
 
 #Close vehicle object before exiting script
 print "Close vehicle object"
-locationThread.join()
+END = True
 rover.close()
 
 print("Completed")
