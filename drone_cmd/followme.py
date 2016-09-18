@@ -1,17 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
-© Copyright 2015-2016, 3D Robotics.
-followme - Tracks GPS position of your computer (Linux only).
-
-This example uses the python gps package to read positions from a GPS attached to your
-laptop and sends a new vehicle.simple_goto command every two seconds to move the
-vehicle to the current point.
-
-When you want to stop follow-me, either change vehicle modes or type Ctrl+C to exit the script.
-
-Example documentation: http://python.dronekit.io/examples/follow_me.html
+Older main file with dronekit follower, deprecated
 """
 
 from dronekit import connect, VehicleMode, LocationGlobalRelative
@@ -79,7 +67,7 @@ try:
             wait_QR_code()
             os.popen("sudo -S %s"%("echo P1-12=80% > /dev/servoblaster"), 'w').write('hack')
             send_ok_msg()
-        else:
+        elif bytearray(data)[0] == 1:
             os.popen("sudo -S %s"%("echo P1-12=20% > /dev/servoblaster"), 'w').write('hack')
             rover.mode = VehicleMode("GUIDED")
             lat, long = struct.unpack("!xdd", data)
